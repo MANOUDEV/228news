@@ -1,0 +1,1 @@
+<togo-politique></togo-politique>
