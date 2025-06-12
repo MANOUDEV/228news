@@ -287,7 +287,7 @@ onMounted(() => {
                             <div class="d-flex mb-2">
                                 
                                 <div>
-                                    <h2 class="text-success m-0 alaune_title">SPORTS</h2> 
+                                    <h2 class="text-success m-0 alaune_title">Economie</h2> 
                                 </div>
                             </div>
                         </div>

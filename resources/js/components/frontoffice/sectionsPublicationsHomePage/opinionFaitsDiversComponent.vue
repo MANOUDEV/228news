@@ -110,13 +110,9 @@ onMounted(() => {
             <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
                 <div class="col-md-12 ">
                     <div class="d-flex mb-2">
+                         
                         <div>
-                            <img src="https://actualitetogo.com/assets/images/Icones_formes/Icones-TAAsset-88.png" class="alaune_logo" alt="">
-                        </div>
-                        <div>&nbsp; &nbsp; &nbsp;</div>
-                        <div>
-                            <h2 class="text-success m-0 alaune_title">FAITS DIVERS</h2>
-                            <p>Suivez nos actualités sur les faits divers.</p>
+                            <h2 class="text-success m-0 alaune_title">FAITS DIVERS</h2> 
                         </div>
                     </div>
                     <!-- Title -->
