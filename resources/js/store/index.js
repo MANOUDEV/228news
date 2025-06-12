@@ -19,7 +19,11 @@ import newsletterModule from './modules/frontoffice/footer/newsletter'
 import categoryPopularsModule from './modules/frontoffice/footer/categoryPopulars'
 
 import tagsPopularsModule from './modules/frontoffice/footer/tagsPopulars'
+ 
+//Importation du module gérant les données des publications sur la page d'accueil
 
+import sectionsPublicationsHomePageModule from './modules/frontoffice/sectionsPublicationsHomePage/sectionsPublicationsHomePage'
+ 
 //Le fonctionnalités pour l'authentification
 
 import loginModule from './modules/auth/login';
@@ -40,6 +44,7 @@ import roleModule from './modules/backoffice/role'
 //Importation du module gérant les données d'envoi de messages
 
 import contactModule from "./modules/frontoffice/includes/contact"
+
   
 const store = createStore({
     modules:{
@@ -65,6 +70,10 @@ const store = createStore({
         meProfile: meProfileModule,
         forgot_password: forgot_passwordModule,
         register: registerModule,
+
+        //Déclaration du module gérant les données des publications sur la page d'accueil
+        
+        sectionsPublicationsHomePage: sectionsPublicationsHomePageModule,
 
         //Déclaration des modules gérant les données du système de la securité su site
 

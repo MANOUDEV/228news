@@ -39,6 +39,20 @@ import in_second_menuF from './components/frontoffice/verify_auth/in_second_menu
 import off_canvasF from './components/frontoffice/verify_auth/off_canvas.vue'
 
 import in_first_menuF from './components/frontoffice/verify_auth/in_first_menu.vue'
+
+//Importation, déclaration et chargement des composants des sections de publications inclus dans la page d'accueil
+
+import togoPolitiqueComponent from './components/frontoffice/sectionsPublicationsHomePage/togoPolitiqueComponent.vue'
+
+import aNePasManquerTogoComponent from './components/frontoffice/sectionsPublicationsHomePage/aNePasManquerTogoComponent.vue'
+
+import internationalComponent from './components/frontoffice/sectionsPublicationsHomePage/internationalComponent.vue'
+
+import opinionFaitsDiversComponent from './components/frontoffice/sectionsPublicationsHomePage/opinionFaitsDiversComponent.vue'
+
+import societeComponent from './components/frontoffice/sectionsPublicationsHomePage/societeComponent.vue'
+
+import importantComponent from './components/frontoffice/sectionsPublicationsHomePage/importantComponent.vue'
  
 //Importation des composants pour l'authentification
 
@@ -109,6 +123,18 @@ app.component('inFirstMenu', in_first_menuF)
 app.component('login', loginH)
 
 app.component('contact', contactF)
+
+app.component('togoPolitique', togoPolitiqueComponent)
+
+app.component('aNePasManquerTogo', aNePasManquerTogoComponent)
+
+app.component('international', internationalComponent)
+
+app.component('societe', societeComponent)
+
+app.component('opinionFaitsDivers', opinionFaitsDiversComponent)
+
+app.component('important', importantComponent)
 
 app.use(VueSweetalert2).use(store).mount('#app')
 

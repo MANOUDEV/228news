@@ -14,6 +14,18 @@
 
             @include('sectionHomePage.toutelActualite.toutelActualite')
 
+            @include('sectionHomePage.togoPolitique.togoPolitique')
+
+            @include('sectionHomePage.international.international')
+
+            @include('sectionHomePage.important.important')
+
+            @include('sectionHomePage.opinionFaitsDivers.opinionFaitsDivers')
+
+            @include('sectionHomePage.societe.societe')
+
+            @include('sectionHomePage.aNePasManquerTogo.aNePasManquerTogo')
+
         </section>
 
         @include('includes.newletter')
