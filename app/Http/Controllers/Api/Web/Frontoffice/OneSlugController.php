@@ -232,7 +232,7 @@ class OneSlugController extends BaseController
                         ->take(8)
                         ->get();
 
-                        return view('oneSlugPage.article',[
+                        return view('oneSlugPage.publication',[
                             'article' => $article,
                             'files' => $files,
                             'tags' => $tags,
