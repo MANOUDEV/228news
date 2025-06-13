@@ -1,132 +1,3 @@
-<script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useStore } from 'vuex';
-import Swal from 'sweetalert2';
-
-const store = useStore();
-const dataReady = ref(0);
-const username = ref(null);
-const password = ref(null);
-const remember_me = ref(false);
-const loading = ref(false);
-const error = ref(null);
-const errors = ref({}); 
-const meProfileRoleName = ref(null);
-const meProfileUserName = ref(null);
-const showPsw = ref(false); 
-
-
-// Fonction pour afficher/masquer le mot de passe
-const showPassword = () => {
-  const x = document.getElementById('psw-input');
-  if (x.type === 'password') {
-    x.type = 'text';
-    showPsw.value = true;
-  } else {
-    x.type = 'password';
-    showPsw.value = false;
-  }
-};
-
-const show = async () => {
-  if (localStorage.getItem('access_token') && localStorage.getItem('nbRsp')) {
-    await store.dispatch('meProfile/getMeProfile');
-    
-    const gettersMeProfileUserName =  store.getters['meProfile/getMeProfileUserName'];
-    const gettersMeProfileRoleName =  store.getters['meProfile/getMeProfileRoleName'];
-    const gettersMeProfileStatus =  store.getters['meProfile/getMeProfileStatus'];  
-
-    if (gettersMeProfileStatus === 'success') {
-      meProfileRoleName.value = gettersMeProfileRoleName;
-      meProfileUserName.value = gettersMeProfileUserName;
-      dataReady.value = 1;
-    } else if (gettersMeProfileStatus === 'failed') {
-      if (localStorage.getItem('remember_me') === 'true') {
-        username.value = localStorage.getItem('username');
-        password.value = localStorage.getItem('password');
-        remember_me.value = localStorage.getItem('remember_me');
-      }
-      dataReady.value = 3;
-    } else {
-      dataReady.value = 3;
-      if (localStorage.getItem('remember_me') === 'true') {
-        username.value = localStorage.getItem('username');
-        password.value = localStorage.getItem('password');
-        remember_me.value = localStorage.getItem('remember_me');
-      }
-    }
-  } else {
-    dataReady.value = 2;
-    if (localStorage.getItem('remember_me') === 'true') {
-      username.value = localStorage.getItem('username');
-      password.value = localStorage.getItem('password');
-      remember_me.value = localStorage.getItem('remember_me');
-    }
-  }
-};
-
-const submitLogin = async () => {
-  loading.value = true;
-  error.value = false;
-  errors.value = [];
-  
-  // Action de connexion
-  await store.dispatch('login/login',{
-    username: username.value,
-    password: password.value,
-    remember_me: remember_me.value,
-  });
-
-  const getterLoginStatus = store.getters['login/getLoginStatus'];
-  const getterLoginMessage = store.getters['login/getLoginMessage'];
-  const getterLoginErrors = store.getters['login/getLoginErrors'];
-
-  if (getterLoginStatus === 'success admin' || getterLoginStatus === 'success pub' || getterLoginStatus === 'success visitor') {
-    const Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer);
-        toast.addEventListener('mouseleave', Swal.resumeTimer);
-      },
-    });
-
-    Toast.fire({
-      icon: 'success',
-      title: getterLoginMessage,
-    });
-
-    // Sauvegarder dans localStorage si "se souvenir de moi" est activé
-    if (remember_me.value) {
-      localStorage.setItem('username', username.value);
-      localStorage.setItem('password', password.value);
-      localStorage.setItem('remember_me', true);
-    } else {
-      localStorage.setItem('remember_me', false);
-    }
-
-    loading.value = false;
-    window.location = getterLoginStatus === 'success admin' ? '/admin/dashboard' : (getterLoginStatus === 'success pub' ? '/pub/dashboard' : '/');
-
-  } else if (getterLoginStatus === 'failed') {
-    error.value = getterLoginMessage;
-    errors.value = []; 
-    loading.value = false;
-  }else if (getterLoginStatus === 'error') {
-    error.value = getterLoginMessage;
-    errors.value = getterLoginErrors;
-    loading.value = false; 
-  } 
-}
- 
-onMounted(() => {
-  show();
-});
-</script>
- 
 <template>
     <!-- **************** MAIN CONTENT START **************** -->
     <main style="margin-top: -45px; margin-bottom: -35px;">
@@ -140,7 +11,7 @@ onMounted(() => {
             </div>
             <br><br><br><br><br><br>
         </div>
-        <section v-else-if="dataReady === 2 || dataReady === 3">
+        <section v-if="dataReady == 2">
             <div class="container">
                 <div class="row">
                     <div class="col-md-10 col-lg-8 col-xl-6 mx-auto">
@@ -161,7 +32,6 @@ onMounted(() => {
                                     <div id="exampleInputEmail1" v-for="errorUsername in errors.username" :key="errorUsername" class="invalid-feedback">
                                         {{ errorUsername }}
                                     </div>
-                                    
                                 </div>
                                 <div class="mb-3" v-else>
                                     <label class="form-label" for="exampleInputEmail1">Nom d'utilisateur ou votre email</label>
@@ -173,17 +43,16 @@ onMounted(() => {
                                     <label class="form-label" for="exampleInputPassword1">Mot de passe</label>
                                      
                                     <div class="input-group">
-                                      <input v-model="password"  name="password" class="form-control is-invalid fakepassword" type="password" id="psw-input" placeholder="*********">
-                                      <span class="input-group-text p-0" @click="showPassword" style="cursor: pointer">
-                                        <i v-if="showPsw == false" class="fakepasswordicon far fa-eye cursor-pointer p-2 w-40px"></i>
-                                        <i v-else class="fakepasswordicon far fa-eye-slash cursor-pointer p-2 w-40px"></i>
-                                      </span>
-                                     
+                                        <input v-model="password" name="password" class="form-control fakepassword" type="password" id="psw-input" placeholder="*********">
+                                        <span class="input-group-text p-0" @click="showPassword" style="cursor: pointer">
+                                            <i v-if="showPsw == false" class="fakepasswordicon far fa-eye cursor-pointer p-2 w-40px"></i>
+                                            <i v-else class="fakepasswordicon far fa-eye-slash cursor-pointer p-2 w-40px"></i>
+                                        </span>
                                     </div>
                                     <div class="rounded mt-1" id="psw-strength"></div>
-                                    <small id="exampleInputPassword1" v-for="errorPassword in errors.password" :key="errorPassword" class="text-danger">
+                                    <div id="exampleInputPassword1" v-for="errorPassword in errors.password" :key="errorPassword" class="invalid-feedback">
                                         {{ errorPassword }}
-                                    </small>
+                                    </div>
                                 </div>
                                 <div class="mb-3" v-else>
                                     <label class="form-label"  for="exampleInputPassword1">Mot de passe</label>
@@ -206,7 +75,7 @@ onMounted(() => {
                                     <div class="col-sm-4">
                                         <button type="button" disabled v-if="loading" class="btn btn-success"> <i  style="color: #fff" class="fa fa-spinner fa-spin fa-1x fa-fw"></i>
                                             <span class="sr-only">Loading...</span>  Connexion</button>
-                                        <button    @click.prevent="submitLogin" v-else class="btn btn-success">Se connecter</button>
+                                        <button    @click.prevent="saveNewsletter" v-else class="btn btn-success">Se connecter</button>
                                     
                                     </div>
                                     <div class="col-sm-8 text-sm-end">
@@ -239,7 +108,7 @@ onMounted(() => {
                 </div>
             </div>
         </section>
-        <section class="overflow-hidden" v-else-if="dataReady === 1">
+        <section class="overflow-hidden" v-else-if="dataReady == 1">
             <div class="container">
                 <div class="row">
                     <div class="col-md-9 text-center mx-auto my-0 my-md-5 py-0 py-lg-5 position-relative z-index-9">
@@ -283,5 +152,418 @@ onMounted(() => {
         </section>
         <!-- =======================Inner intro END -->
     </main>
-    
-</template> 
+    <!-- **************** MAIN CONTENT END **************** -->
+    <div class="modal fade" id="verifyCaptchaLogin" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content" >
+                <div class="modal-header">
+                    <h5 class="modal-title">Vérification CAPTCHA</h5>
+                    <button type="button" class="btn-close" @click="verifyCaptchaLoginClose" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3"  > 
+                        <div class="input-btn">
+                            <div class="input-img">
+                              <input type="text" class="form-control captcha-text" v-model="captchaRandomNumber" disabled />
+                              <img :src="`/assets/images/captcha.jpg`" alt=""/>
+                            </div>
+                            <button class="refresh-btn" @click="reloadcaptchaRandomNumber">
+                              <i class="fas fa-rotate-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-3"  > 
+                        <div class="input-btn">
+                            <div class="input-img">
+                              <input type="text" class="form-control " v-model="captchaRandomVerify" /> 
+                            </div>
+                            <button class="refresh-btn" @click="save">
+                              <i class="fas fa-arrow-right"></i>
+                            </button> 
+                        </div>
+                        <small class="text-danger" v-if="messageCaptcha">{{ messageCaptcha }}</small>
+                    </div>
+                </div>  
+                <div class="modal-footer"> </div>
+                <div  style="margin-top: -15px">
+                    <p class="text-center">Verifions si vous n'êtes pas un robot</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+    import {mapActions, mapGetters} from 'vuex';
+    export default {
+        data(){
+            return{
+                username:null,
+                password: null,
+                loginError: false,
+                loading: false,
+                error: false,
+                errors: [],
+                dataReady: 0,
+                meProfileRoleName: null,
+                remember_me: false,
+                showPsw: false,
+                captchaRandomNumber: null,
+                captchaRandomVerify: null,
+                messageCaptcha:null,
+                authState: false,
+            }
+        },
+        computed:{
+            ...mapGetters('login',{
+                getterLoginStatus:'getLoginStatus',
+                getterLoginMessage:'getLoginMessage',
+                getterLoginErrors:'getLoginErrors',
+            }),
+            ...mapGetters("meProfile",{
+                gettersMeProfileStatus:'getMeProfileStatus',
+                gettersMeProfileRoleName:"getMeProfileRoleName",
+            }),
+        },
+        methods:{
+            ...mapActions('login',{
+                actionLogin:'login'
+            }),
+            ...mapActions("meProfile",{
+                actionsGetMeProfile:'getMeProfile'
+            }),
+
+            showPassword(){
+                var x = document.getElementById("psw-input");
+                if (x.type === "password") {
+                    x.type = "text";
+                    this.showPsw = true
+                } else {
+                    x.type = "password";
+                    this.showPsw = false
+                }
+            },
+
+            verifyCaptchaLoginClose(){ 
+                this.generateCaptcha()
+                this.messageCaptcha = null
+                this.captchaRandomVerify = null
+                $('#verifyCaptchaLogin').modal('hide');
+            },
+
+            verifyCaptchaLoginShow(){ 
+                this.generateCaptcha()
+                $('#verifyCaptchaLogin').modal('show');
+            },
+
+            reloadcaptchaRandomNumber(){
+                this.generateCaptcha()
+            },
+
+            generateCaptcha(){
+                const randomString = Math.random().toString(36).substring(2, 7);
+                const randomStringArray = randomString.split("");
+                const changeString = randomStringArray.map((char) =>
+                    Math.random() > 0.5 
+                    ? char.toUpperCase() 
+                    : char
+                );
+
+                this.captchaRandomNumber = changeString.join(""); 
+            }, 
+
+            saveNewsletter(){ 
+                this.generateCaptcha()
+                this.verifyCaptchaLoginShow() 
+            },
+
+            save(){
+                this.messageCaptcha = null
+                if(this.captchaRandomVerify != this.captchaRandomNumber){
+
+                    this.messageCaptcha="Veuillez entrer un captcha valide."
+
+                }else{
+                    this.messageCaptcha = null
+                    this.verifyCaptchaLoginClose()
+                    this.submitLogin()
+                }
+            }, 
+            async show(){
+
+                if(localStorage.getItem('access_token') && localStorage.getItem('nbRsp')){
+
+                    await this.actionsGetMeProfile();
+
+                    if(this.gettersMeProfileStatus === 'success'){
+
+                        this.meProfileRoleName = this.gettersMeProfileRoleName
+
+                        this.dataReady = 1
+ 
+                        if(localStorage.getItem('remember_me') == "true"  &&  localStorage.getItem('username') && localStorage.getItem('password')){
+
+                            this.username = localStorage.getItem('username')
+
+                            this.password = localStorage.getItem('password')
+
+                            this.remember_me = localStorage.getItem('remember_me')
+
+                        }
+
+                    }else if(this.gettersMeProfileStatus === 'failed'){
+
+                        this.dataReady = 2;
+
+                        if(localStorage.getItem('remember_me') == "true"  && localStorage.getItem('username') && localStorage.getItem('password')){
+
+                            this.username = localStorage.getItem('username')
+
+                            this.password = localStorage.getItem('password')
+
+                             
+
+                        }
+
+                    }
+
+                }else{ 
+ 
+                     this.dataReady = 2;
+
+                    if(localStorage.getItem('remember_me') == "true" && localStorage.getItem('username') && localStorage.getItem('password')){
+
+                        this.username = localStorage.getItem('username')
+
+                        this.password = localStorage.getItem('password')
+
+                        this.remember_me = localStorage.getItem('remember_me')
+
+                    }
+
+                }
+            },
+            async submitLogin(){
+                this.loading = true
+                this.error = false
+                this.errors =  []
+                await this.actionLogin({username:this.username, password:this.password, remember_me: this.remember_me});
+
+
+                if(this.getterLoginStatus === 'success admin'){
+
+                    const Toast = this.$swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', this.$swal.stopTimer)
+                            toast.addEventListener('mouseleave', this.$swal.resumeTimer)
+                        }
+                    })
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: this.getterLoginMessage
+                    })
+
+                    this.error = false
+                    this.errors =  []
+
+                    if(this.remember_me){
+
+                        localStorage.setItem('username', this.username )
+
+                        localStorage.setItem('password', this.password)
+
+                        localStorage.setItem('remember_me', true)
+
+                        this.loading = false
+
+                        window.location = '/admin/dashboard'
+
+
+                    }else{
+
+                        localStorage.setItem('remember_me', false)
+
+                        this.loading = false
+
+                        window.location = '/admin/dashboard'
+                    }
+
+
+
+                }else if(this.getterLoginStatus === 'success pub'){
+
+                    this.error = false
+                    this.errors =  []
+
+                    const Toast = this.$swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', this.$swal.stopTimer)
+                            toast.addEventListener('mouseleave', this.$swal.resumeTimer)
+                        }
+                    })
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: this.getterLoginMessage
+                    })
+
+                    if(this.remember_me){
+
+                        localStorage.setItem('username', this.username )
+
+                        localStorage.setItem('password', this.password)
+
+                        localStorage.setItem('remember_me', true)
+
+                        this.loading = false
+
+                        window.location = '/pub/dashboard'
+
+
+                    }else{
+
+                        localStorage.setItem('remember_me', false)
+
+                        this.loading = false
+
+                        window.location = '/pub/dashboard'
+                    }
+
+
+
+                }else if(this.getterLoginStatus === 'success visitor'){
+
+                    this.error = false
+                    this.errors =  []
+
+                    const Toast = this.$swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', this.$swal.stopTimer)
+                            toast.addEventListener('mouseleave', this.$swal.resumeTimer)
+                        }
+                    })
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: this.getterLoginMessage
+                    })
+
+                    if(this.remember_me){
+
+                        localStorage.setItem('username', this.username )
+
+                        localStorage.setItem('password', this.password)
+
+                        localStorage.setItem('remember_me', true)
+
+                        this.loading = false
+
+                        window.location = '/'
+
+
+                    }else{
+
+                        localStorage.setItem('remember_me', false)
+
+                        this.loading = false
+
+                        window.location = '/'
+                    }
+
+
+
+                }else if(this.getterLoginStatus === 'failed'){
+
+                    this.error = this.getterLoginMessage
+
+                    this.errors = []
+
+                    this.loading = false
+
+                }else if(this.getterLoginStatus === 'error'){
+
+                    this.error = this.getterLoginMessage
+
+                    this.errors = this.getterLoginErrors
+
+                    this.loading = false
+                }
+            }
+        },
+        mounted(){
+            this.show();
+        }
+    };
+</script>
+
+<style> 
+.input-btn {
+    width: 100%;
+    height: 50px; 
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    overflow: hidden;
+  }
+  
+  .input-img {
+    position: relative;
+    width: 80%;
+    height: 100%;
+  }
+  
+  .input-img input {
+    width: 100%;
+    height: 100%;
+    outline: none;
+    border: none;
+    background: none;
+    font-size: 25px;
+    padding: 0 20px;
+    font-family: "Ga Maamli";
+  }
+  
+  .input-img img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.6;
+  }
+  
+  .refresh-btn {
+    width: 20%;
+    height: 100%;
+    border: none;
+    background: #4070f4;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .refresh-btn:hover {
+    opacity: 0.9;
+  }
+  .captcha-text{
+    color: #000;
+    font-weight:bold;
+    font-style: italic;
+  }
+</style>

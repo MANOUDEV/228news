@@ -1,7 +1,9 @@
 <script setup> 
 import { ref, onMounted } from 'vue';
 import Swal from 'sweetalert2'
-import 'sweetalert2/dist/sweetalert2.min.css'; 
+import 'sweetalert2/dist/sweetalert2.min.css';
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { useStore } from 'vuex';
 
 const store = useStore();
@@ -265,13 +267,13 @@ onMounted(() => {
                                 <div class="col-md-12">
                                     <!-- Message -->
                                     <div class="mb-3" v-if="errors.content">
-                                        <textarea v-model="content" placeholder='Redigez le contenu de votre requête!' style=" min-height: 100px;" contentType="html" ></textarea>
+                                        <QuillEditor theme="snow" v-model:content="content" placeholder='Redigez le contenu de votre requête!' style=" min-height: 100px;" contentType="html" />
                                         <div id="exampleInputPassword1" v-for="errorContent in errors.content" :key="errorContent" class="invalid-feedback">
                                             {{ errorContent }}
                                         </div>
                                     </div>
                                     <div class="mb-3" v-else>
-                                        <textarea v-model="content" placeholder='Redigez le contenu de votre requête!' style=" min-height: 100px;" contentType="html" ></textarea>
+                                        <QuillEditor theme="snow" v-model:content="content" placeholder='Redigez le contenu de votre requête!' style=" min-height: 100px;" contentType="html" />
                                         
                                     </div>
                                 </div>
@@ -340,13 +342,13 @@ onMounted(() => {
                                 <div class="col-md-12">
                                     <!-- Message -->
                                     <div class="mb-3" v-if="errors.content">
-                                        <textarea v-model="content" placeholder='Redigez le contenu de votre requête!' style=" min-height: 100px;" contentType="html" ></textarea>
+                                        <QuillEditor theme="snow" v-model:content="content" placeholder='Redigez le contenu de votre requête!' style=" min-height: 100px;" contentType="html" />
                                         <div id="exampleInputPassword1" v-for="errorContent in errors.content" :key="errorContent" class="invalid-feedback">
                                             {{ errorContent }}
                                         </div>
                                     </div>
                                     <div class="mb-3" v-else>
-                                        <textarea v-model="content" placeholder='Redigez le contenu de votre requête!' style=" min-height: 100px;" contentType="html" ></textarea>
+                                        <QuillEditor theme="snow" v-model:content="content" placeholder='Redigez le contenu de votre requête!' style=" min-height: 100px;" contentType="html" />
                                         
                                     </div>
                                 </div>

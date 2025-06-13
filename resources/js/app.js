@@ -165,3 +165,52 @@ publicateur.component('accessUnAuthorizedPub', accessUnAuthorizedPubComponent)
 publicateur.component('sessionExpiredMessagePub', sessionExpiredMessagePubComponent)
 
 publicateur.use(pubRouter.routeConfig).use(store).mount('#pub');
+
+
+//Importation du Composant de contact à afficher sur la page d'accueil
+
+import ContactF from './components/frontoffice/home_page/contact.vue'
+
+const contact = createApp(ContactF)
+
+contact.use(VueSweetalert2);
+
+contact.use(store);
+
+contact.mount('#contact')
+
+//Importation du Composant des données à afficher sur la page d'un article
+
+import statesComponent from './components/frontoffice/article/states.vue'
+
+import commentsComponent from './components/frontoffice/article/comments.vue'
+
+const states = createApp(statesComponent)
+
+const comments = createApp(commentsComponent)
+
+states.use(VueSweetalert2);
+
+states.use(store);
+
+states.mount('#states')
+
+comments.use(VueSweetalert2);
+
+comments.use(store);
+
+comments.mount('#comments')
+
+
+//Importation du Composant de contact à afficher sur la page d'accueil
+
+import ChangeProgramF from './components/frontoffice/home_page/changeProgram.vue'
+
+const changeProgram = createApp(ChangeProgramF)
+
+changeProgram.use(VueSweetalert2);
+
+changeProgram.use(store);
+
+changeProgram.mount('#changeProgram')
+

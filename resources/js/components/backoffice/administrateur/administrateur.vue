@@ -1,57 +1,11 @@
-<script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useStore } from 'vuex';
-import Swal from 'sweetalert2';
-
-const store = useStore();
-const dataReady = ref(0);
-const  meRoleName = ref(null); 
-
-const show = async () => {
- 
-    if(localStorage.getItem('access_token') && localStorage.getItem('nbRsp')){
-
-        await store.dispatch('roleSecurity/getMeRole', {});
-
-        const gettersRoleStatus =  store.getters['roleSecurity/getRoleStatus'];
-        const gettersMeRoleName =  store.getters['roleSecurity/getMeRoleName'];
-
-        if(gettersRoleStatus === 'success'){
-
-            meRoleName.value = gettersMeRoleName
-
-            if((meRoleName.value == localStorage.getItem('nbRsp')) && (localStorage.getItem('nbRsp') === '&nbtsd!?')){
-
-                dataReady.value = 1
-
-            }else{ 
-                dataReady.value= 2 
-            } 
-
-        }else if(gettersRoleStatus === 'failed'){
-
-            dataReady.value = 3;
-        }
-
-    }else{
-
-        dataReady.value = 4; 
-    }
-    
-};
-
-onMounted(() => {
-  show();
-});
-</script>
 <template>
     <div  v-if="dataReady == 0" >
         <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
         <div class="d-flex justify-content-center">
-            <img :src="`/assets/images/logo.svg`"  style="width: 150px;" alt="empty">
+            <img src="https://togoactu.com/assets/images/logo.png"  style="width: 150px;" alt="empty">
         </div>
         <div class="d-flex justify-content-center mt-3">
-            <div class="spinner-border text-success" role="status">
+            <div class="spinner-border text-success" style="text-success: #006633" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         </div>
@@ -70,4 +24,76 @@ onMounted(() => {
     <div v-else-if="dataReady== 3"> <sessionExpiredMessageAdmin></sessionExpiredMessageAdmin> </div>
     <div v-else-if="dataReady== 4"> <authRequiredMessageAdmin></authRequiredMessageAdmin> </div>
 
-</template> 
+</template>
+<script>
+import { mapGetters, mapActions} from "vuex";
+export default {
+    // inside your script
+    data () {
+        return {
+            dataReady: 0,
+            meRoleName: null,
+        }
+    },
+    computed: {
+        ...mapGetters("roleSecurity",{
+            gettersMeRoleName:"getMeRoleName",
+            gettersRoleStatus:'getRoleStatus',
+        }),
+
+    },
+    methods:{
+      ...mapActions("roleSecurity",{
+          actionsGetMeRole:'getMeRole'
+      }),
+
+      async show(){
+
+        if(localStorage.getItem('access_token') && localStorage.getItem('nbRsp')){
+
+            await this.actionsGetMeRole();
+
+            if(this.gettersRoleStatus === 'success'){
+
+                this.meRoleName = this.gettersMeRoleName
+
+                if((this.meRoleName == localStorage.getItem('nbRsp')) && (localStorage.getItem('nbRsp') === '&nbtsd!?')){
+
+                    this.dataReady = 1
+
+                }else{
+
+
+                    this.dataReady= 2
+
+
+
+                }
+
+
+
+            }else if(this.gettersRoleStatus === 'failed'){
+
+                this.dataReady = 3;
+            }
+
+        }else{
+
+            this.dataReady = 4;
+
+
+
+        }
+
+      },
+
+      expiredSessionModalClose(){
+        $('#expiredSessionModal').modal('hide')
+      }
+
+    },
+    mounted() {
+     this.show();
+    },
+};
+</script>

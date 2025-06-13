@@ -1,52 +1,3 @@
-<script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useStore } from 'vuex';
-import Swal from 'sweetalert2';
-
-const store = useStore();
-const dataReady = ref(0);
-const meProfileUserName = ref(null);
-const meProfileRoleName = ref(null);
-const meProfileEmail = ref(null); 
-const logoutCheck = ref(false);
-const loadingConnect = ref(false);
-const remember_me = ref(false);
-
-const loginClick = async () => {
-  if (localStorage.getItem('remember_me') === 'true' && localStorage.getItem('username') && localStorage.getItem('password')) {
-    loadingConnect.value = true;
-    remember_me.value = localStorage.getItem('remember_me');
-
-    await store.dispatch('login/login', {
-      username: localStorage.getItem('username'),
-      password: localStorage.getItem('password'),
-      remember_me: localStorage.getItem('remember_me')
-    });
-
-    const getterLoginStatus =  store.getters['login/getLoginStatus'];
-    const getterLoginMessage =  store.getters['login/getLoginMessage'];
-
-    if (getterLoginStatus.includes('success')) {
-      Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: 'success',
-        title: getterLoginMessage,
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true
-      });
-      const redirectPath = getterLoginStatus.includes('admin') ? '/admin/dashboard' : getterLoginStatus.includes('pub') ? '/pub/dashboard' : '/';
-      window.location = redirectPath;
-    } else {
-      window.location = '/auth/login';
-    }
-  } else {
-    window.location = '/auth/login';
-  }
-};
-
-</script>
 <template>
     <section class="overflow-hidden">
         <div class="container">
@@ -83,11 +34,9 @@ const loginClick = async () => {
             <!-- Content -->
             <h1 class="display-1 text-primary">Oops</h1>
             <h5>Veuillez vous connecter afin de pouvoir acceder à cette page</h5>
-            <span style="cursor: pointer"  v-if="!loadingConnect" @click="loginClick" class="btn btn-danger-soft mt-3"><i class="fas fa-long-arrow-alt-left me-3"></i>Se connecter</span>
-            <span  v-else-if="loadingConnect"  class="btn btn-danger-soft mt-3">Connexion en cours ...</span>
+            <a href="/auth/login" class="btn btn-danger-soft mt-3"><i class="fas fa-long-arrow-alt-left me-3"></i>Se connecter</a>
         </div>
         </div>
-
         </div>
     </section>
-</template> 
+</template>

@@ -28,7 +28,24 @@ class LoginController extends BaseController
    
 
     public function login(){
-        
+
+        SEOMeta::setTitle('Se connecter | Togo actualité');
+        SEOMeta::setDescription('Nous sommes Togo Actualité, l’information en temps réel sur le Togo et l’Afrique.');
+        SEOMeta::setCanonical('https://actualitetogo.com/auth/login');
+
+        OpenGraph::setDescription('Nous sommes Togo Actualité, l’information en temps réel sur le Togo et l’Afrique.');
+        OpenGraph::setTitle('Se connecter | Togo actualité');
+        OpenGraph::setUrl('https://actualitetogo.com/auth/login');
+        OpenGraph::addProperty('type', 'articles');
+        OpenGraph::addImage("https://actualitetogo.com/assets/images/Icone.png");
+
+        TwitterCard::setTitle('Se connecter | Togo actualité');
+        TwitterCard::setSite('@Togoactualite');
+
+        JsonLd::setTitle('Se connecter | Togo actualité');
+        JsonLd::setDescription('Nous sommes Togo Actualité, l’information en temps réel sur le Togo et l’Afrique.');
+        JsonLd::addImage('https://actualitetogo.com/assets/images/Icone.png');
+
         return view('authentication.login');        
 
     }
